@@ -43,34 +43,8 @@ public class Controller {
 		}
 
 		return null;
-
 	}
 
-	/**
-	 * Delete (aun no está terminado)
-	 * 
-	 * @param user
-	 * @param pass
-	 * @param delete
-	 * @return
-	 */
-	@GetMapping(path = "/delete", produces = "text/event-stream")
-	public Flux delete(@RequestParam(value = "user") String user, @RequestParam(value = "password") String pass,
-			@RequestParam(value = "delete") String delete) {
-		var res = listaUsuarios.stream().filter(p -> (p.getUser().equals(user) && p.getPassword().equals(pass)))
-				.collect(Collectors.toList());
-		if (!res.isEmpty()) {
-			var del = listaUsuarios.stream().filter(p -> p.getUser().equals(delete)).collect(Collectors.toList());
-			listaUsuarios.remove(del.get(0));
-			System.err.println();
-			Flux<Person> flux = Flux.fromIterable(listaUsuarios);
-
-			return flux;
-		}
-
-		return null;
-
-	}
 
 	@GetMapping(path = "/addUser")
 	public void addUser(@RequestParam String name, @RequestParam String user, @RequestParam String password,
@@ -79,10 +53,13 @@ public class Controller {
 		Flux.concat(flux, Flux.just(new Person(name, user, password, age)));
 	}
 	
-	public void delteUser(@RequestParam String name) {
+	@GetMapping(path="/delete")
+	public void deleteUser(@RequestParam String user) {
+		Person buscar = null;
 		for (Person person : listaUsuarios) {
-			//if(person.getUser()==name) 
+			if(person.getUser().equals(user)) buscar = person;  
 		}
+		listaUsuarios.remove(buscar);		
 	}
 
 }
